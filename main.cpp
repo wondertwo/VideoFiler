@@ -4,15 +4,52 @@
 #include <stdio.h>
 #include <zconf.h>
 #include <vector>
+#include <string>
 #include <algorithm>
 
 using namespace std;
 
-/**
- * @param input
- * @param delimiter
- * @return
- */
+struct President { /* explains the different between vector#emplace_back and vector#push_back */
+    std::string name;
+    std::string country;
+    int year;
+
+    President(std::string p_name, std::string p_country, int p_year)
+            : name(std::move(p_name)), country(std::move(p_country)), year(p_year)
+    {
+        std::cout << "I am being constructed.\n";
+    }
+    President(const President& other)
+            : name(std::move(other.name)), country(std::move(other.country)), year(other.year)
+    {
+        std::cout << "I am being copy constructed.\n";
+    }
+    President(President&& other)
+            : name(std::move(other.name)), country(std::move(other.country)), year(other.year)
+    {
+        std::cout << "I am being moved.\n";
+    }
+    President& operator=(const President& other);
+};
+
+void testPresidentElections() { /* test the different between vector#emplace_back and vector#push_back */
+    std::vector<President> elections;
+    std::cout << "emplace_back:" << endl;
+    elections.emplace_back("Nelson Mandela", "South Africa", 1994); //没有类的创建
+
+    std::vector<President> reElections;
+    std::cout << "push_back:" << endl;
+    reElections.push_back(President("Franklin Delano Roosevelt", "the USA", 1936));
+
+    std::cout << "contents:" << endl;
+    for (const President &president: elections) {
+        std::cout << president.name << " was elected president of " << president.country << " in " << president.year << endl;
+    }
+    for (President const& president: reElections) {
+        std::cout << president.name << " was re-elected president of " << president.country << " in " << president.year << endl;
+    }
+}
+
 vector<string> split_str(const string &input, const string &delimiter) {
     char *input_c = new char[strlen(input.c_str()) + 1];
     strcpy(input_c, input.c_str());
@@ -83,5 +120,6 @@ int main() {
     cout << "video path:" << videopath << endl;
 
     extractVideoFormatInfo(videopath);
+    testPresidentElections();
     return 0; // end main
 }
