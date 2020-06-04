@@ -6,7 +6,7 @@
 
 
 void readFromVideoFile(const string &videoFilePath) {
-    string tmpFile = "/Users/wondertwo/Desktop/GuildLobby.txt";
+    string tmpFile = "resources/GuildLobby.txt";
     ofstream outfile;
     outfile.open(tmpFile, static_cast<ios_base::openmode>(true));
 
@@ -19,7 +19,7 @@ void readFromVideoFile(const string &videoFilePath) {
     outfile.close();
 }
 
-void readVideoFormatInfo(const string &videoFilePath) {
+void extractVideoFormatInfo(const string &videoFilePath) {
     const int ARR_SIZE = 8;
     unsigned short usValues[ARR_SIZE] = {0};
 
@@ -36,7 +36,7 @@ void readVideoFormatInfo(const string &videoFilePath) {
             videofile.read((char*)&usValue, 2);
             cout << usValue << ", ";
         }
-        cout << "the " << ++ulCountLines << " line." << endl;
+        cout << "at the " << ++ulCountLines << " line." << endl;
     }
     videofile.close();
 }

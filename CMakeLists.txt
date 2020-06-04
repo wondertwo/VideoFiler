@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.13)
-project(babymonster)
-
 set(CMAKE_CXX_STANDARD 11)
+project(videofiler)
 
-add_executable(babymonster main.cpp
-        common/cronet_builder.cpp
-        common/cronet_builder.h common/wake_reference.cpp common/wake_reference.h common/video_format_parser.cpp common/video_format_parser.h)
+add_executable(videofiler main.cpp
+        cronet_builder.cpp
+        cronet_builder.h
+        wake_reference.cpp
+        wake_reference.h
+        video_format_parser.cpp
+        video_format_parser.h
+)

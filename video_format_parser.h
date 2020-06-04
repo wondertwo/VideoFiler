@@ -12,6 +12,6 @@ using namespace std;
 
 void readFromVideoFile(const string &videoFilePath);
 
-void readVideoFormatInfo(const string &videoFilePath);
+void extractVideoFormatInfo(const string &videoFilePath);
 
 #endif //BABYMONSTER_FILEUTILS_H
