@@ -15,21 +15,21 @@ struct President { /* explains the different between vector#emplace_back and vec
     int year;
 
     President(std::string p_name, std::string p_country, int p_year)
-            : name(std::move(p_name)), country(std::move(p_country)), year(p_year)
-    {
+            : name(std::move(p_name)), country(std::move(p_country)), year(p_year) {
         std::cout << "I am being constructed.\n";
     }
-    President(const President& other)
-            : name(std::move(other.name)), country(std::move(other.country)), year(other.year)
-    {
+
+    President(const President &other)
+            : name(std::move(other.name)), country(std::move(other.country)), year(other.year) {
         std::cout << "I am being copy constructed.\n";
     }
-    President(President&& other)
-            : name(std::move(other.name)), country(std::move(other.country)), year(other.year)
-    {
+
+    President(President &&other)
+            : name(std::move(other.name)), country(std::move(other.country)), year(other.year) {
         std::cout << "I am being moved.\n";
     }
-    President& operator=(const President& other);
+
+    President &operator=(const President &other);
 };
 
 void testPresidentElections() { /* test the different between vector#emplace_back and vector#push_back */
@@ -43,11 +43,93 @@ void testPresidentElections() { /* test the different between vector#emplace_bac
 
     std::cout << "contents:" << endl;
     for (const President &president: elections) {
-        std::cout << president.name << " was elected president of " << president.country << " in " << president.year << endl;
+        std::cout << president.name << " was elected president of " << president.country << " in " << president.year
+                  << endl;
     }
-    for (President const& president: reElections) {
-        std::cout << president.name << " was re-elected president of " << president.country << " in " << president.year << endl;
+    for (President const &president: reElections) {
+        std::cout << president.name << " was re-elected president of " << president.country << " in " << president.year
+                  << endl;
     }
+}
+
+class MyStrTransfer { /*转移语义以及转移构造函数和转移复制运算符*/
+private:
+    char *_data;
+    size_t _len;
+
+    void _init_data(const char *s) {
+        _data = new char[_len + 1];
+        memcpy(_data, s, _len);
+        _data[_len] = '\0';
+    }
+
+public:
+    MyStrTransfer &operator=(MyStrTransfer &&str) {  /* move operator */
+        std::cout << "Move Assignment is called! source: " << str._data << std::endl;
+        if (this != &str) {
+            _len = str._len;
+            _data = str._data;
+            str._len = 0;
+            str._data = nullptr;
+        }
+        return *this;
+    }
+
+    MyStrTransfer(MyStrTransfer &&str) {  /* move constructor */
+        std::cout << "Move Constructor is called! source: " << str._data << std::endl;
+        _len = str._len;
+        _data = str._data;
+        str._len = 0;
+        str._data = nullptr;
+    }
+
+    MyStrTransfer &operator=(const MyStrTransfer &str) {
+        if (this != &str) {
+            _len = str._len;
+            _init_data(str._data);
+        }
+        std::cout << "Copy Assignment is called! Source: " << str._data << std::endl;
+        return *this;
+    }
+
+    MyStrTransfer(const MyStrTransfer &str) {
+        _len = str._len;
+        _init_data(str._data);
+        std::cout << "Copy Constructor is called! Source: " << str._data << std::endl;
+    }
+
+    MyStrTransfer(const char *p) {
+        _len = strlen(p);
+        _init_data(p);
+    }
+
+    MyStrTransfer() {
+        _data = nullptr;
+        _len = 0;
+    }
+
+    virtual ~MyStrTransfer() {
+        if (_data) free(_data);
+    }
+};
+
+/**
+ * MyString(“Hello”)/MyString(“World”) 都是临时对象（也就是右值）。虽然它们是临时的，但程序仍然调用了拷贝构造和拷贝赋值（没有意义的资源申请和释放操作）
+ * 如果能够直接使用临时对象已经申请的资源，既能节省资源，又能节省资源申请和释放的时间。正是定义转移语义的目的。
+ * 编译器区分了左值和右值，对右值调用了转移构造函数和转移赋值操作符。
+ * 有了右值引用和转移语义，我们在设计和实现类时，对于需要动态申请大量资源的类，应该设计转移构造函数和转移赋值函数，以提高应用程序的效率。
+ * https://blog.csdn.net/xiaolewennofollow/article/details/52559306
+ */
+void testMyStrTransfer() {
+    // 1.
+    MyStrTransfer transfer = MyStrTransfer("Hello");
+    // 2.
+    transfer = MyStrTransfer("World");
+
+    std::vector<MyStrTransfer> vec;
+    vec.emplace_back("Homie");
+    // 3.
+    vec.push_back(MyStrTransfer("Blood"));
 }
 
 vector<string> split_str(const string &input, const string &delimiter) {
@@ -121,5 +203,6 @@ int main() {
 
     extractVideoFormatInfo(videopath);
     testPresidentElections();
+    testMyStrTransfer();
     return 0; // end main
 }
