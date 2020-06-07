@@ -1,5 +1,9 @@
 
+.DS_Store
 .idea/*
 cmake-build-debug/*
 cmake-build-release/*
+cmake-build-default/*
+*/.DS_Store
+resources/output.txt
 
