@@ -4,12 +4,16 @@ project(videofiler)
 
 add_executable(videofiler
         main.cpp
+        mtools.cpp
+        mtools.h
         cronet_builder.cpp
         cronet_builder.h
         wake_reference.cpp
         wake_reference.h
-        video_format_parser.cpp
-        video_format_parser.h
-        mtools.cpp
-        mtools.h
+        videotool/video_format_parser.cpp
+        videotool/video_format_parser.h
+        videotool/base_box.cpp
+        videotool/base_box.h
+        videotool/box_factory.cpp
+        videotool/box_factory.h
 )

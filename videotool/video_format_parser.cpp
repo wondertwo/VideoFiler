@@ -26,7 +26,7 @@ void extractVideoFormatInfo(const string &videoFilePath) {
     ifstream videofile; //(videoFile, ios::binary);
     videofile.open(videoFilePath, ios::binary);
     if (!videofile) {
-        cerr << endl << "read video file error" << endl;
+        cerr << endl << "read videotool file error" << endl;
         return;
     }
 
