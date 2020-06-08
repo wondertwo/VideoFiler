@@ -4,9 +4,7 @@
 
 #include "box_factory.h"
 
-BoxFactory::~BoxFactory() {
-
-}
+BoxFactory::~BoxFactory() = default;
 
 BoxFactory* BoxFactory::GetInstance() {
     static BoxFactory boxFactory;
@@ -15,9 +13,9 @@ BoxFactory* BoxFactory::GetInstance() {
 
 BaseBox* BoxFactory::CreateBox(string strType) {
     BaseBox* pBox = NULL;
-    MAP_BOX_CREATEOBJECT::iterator it = m_mapCreateObj.find(strType);
+    /*MAP_BOX_CREATEOBJECT::iterator it = m_mapCreateObj.find(strType);
     if (it != m_mapCreateObj.end()) {
         return (BaseBox*)(it->second());
-    }
-    return NULL;
+    }*/
+    return pBox;
 }

@@ -2,7 +2,6 @@
 // Created by wondertwo(王尧) on 2020/6/6.
 //
 
-#pragma once
 #include "base_box.h"
 #include <map>
 
@@ -11,8 +10,8 @@ typedef std::map<std::string, CreateObject> MAP_BOX_CREATEOBJECT;
 
 class BoxFactory {
 private:
-    BoxFactory();
     virtual ~BoxFactory();
+    BoxFactory();
 
 public:
     static BoxFactory *GetInstance();

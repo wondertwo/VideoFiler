@@ -2,12 +2,10 @@
 // Created by wondertwo(王尧) on 2020/6/6.
 //
 
-
-#pragma once
 #include <string>
 #include <vector>
 
-// ref: https://github.com/macmade/MP4Parse/tree/master/source
+// ref: https://github.com/kingsunc/AVFileParse/tree/master/MP4_Parse
 using namespace std;
 
 typedef unsigned char byte;
@@ -34,13 +32,7 @@ struct box_header {
     byte BoxType[BOXTYPE_SIZE];
 };
 
-/********************************************************************************************
-**		字段名称			|	长度(bytes)	|		有关描述
---------------------------------------------------------------------------------------------
-**		boxsize				|	4			|		box的长度
-**		boxtype				|	4			|		box的类型
-********************************************************************************************
-*/
+
 class BaseBox {
 public:
     BaseBox();
