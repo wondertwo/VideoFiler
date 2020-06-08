@@ -163,8 +163,8 @@ int main() {
     LOGGER::GetColor()->XE("test%s", "MN").XW("test%s", "MN").XI("test%s", "MN").XD("test%s", "MN");
     string videopath = GetDirectory() + "resources/videofiler.mp4";
     string info = "hello world, video path:" + videopath;
-    // LOGGER::GetFile()->E(info).I(info).D(info).W(info);
     LOGGER::GetColor()->E(info).I(info).D(info).W(info);
+    LOGGER::GetFile()->E(info).I(info).D(info).W(info);
 
     // extractVideoFormatInfo(videopath);
     // testMyStrTransfer();
