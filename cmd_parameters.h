@@ -3,15 +3,15 @@
 
 // Two APIs provided:
 //
-// 1) Simple functional api `getarg(...)`.
+// 1) Simple functional api `GET_ARG(...)`.
 //    - No initialization required: (argc, argv) pair automatically retrieved.
 //    - First argument is default option value, then all option indentifiers follow.
 //
 // int main() {
-//     bool help = getarg( false, "-h", "--help", "-?" );
-//     int version = getarg( 0, "-v", "--version", "--show-version" );
-//     int depth = getarg( 1, "-d", "--depth", "--max-depth");
-//     std::string file = getarg( "", "-f", "--file" );
+//     bool help = GET_ARG( false, "-h", "--help", "-?" );
+//     int version = GET_ARG( 0, "-v", "--version", "--show-version" );
+//     int depth = GET_ARG( 1, "-d", "--depth", "--max-depth");
+//     std::string file = GET_ARG( "", "-f", "--file" );
 //     [...]
 // }
 //
@@ -224,27 +224,24 @@ struct getopt : public std::map< std::string, std::string >
 
 // variadic syntax sugars {
 
-template< typename T >
-inline T getarg( const T &defaults, const char *argv ) {
+template< typename T > inline T GET_ARG( const T &defaults, const char *argv ) {
     static struct getopt map( getopt_utils::cmdline() );
     return map.has( argv ) ? getopt_utils::as<T>(map[ argv ]) : defaults;
 }
 
-template< typename T, typename... Args >
-inline T getarg( const T &defaults, const char *arg0, Args... argv ) {
-    T t = getarg<T>( defaults, arg0 );
-    return t == defaults ? getarg<T>( defaults, argv... ) : t;
+template< typename T, typename... Args > inline T GET_ARG( const T &defaults, const char *arg0, Args... argv ) {
+    T t = GET_ARG<T>( defaults, arg0 );
+    return t == defaults ? GET_ARG<T>( defaults, argv... ) : t;
 }
 
-inline const char * getarg( const char *defaults, const char *argv ) {
+inline const char * GET_ARG( const char *defaults, const char *argv ) {
     static struct getopt map( getopt_utils::cmdline() );
     return map.has( argv ) ? getopt_utils::as<const char *>(map[ argv ]) : defaults;
 }
 
-template< typename... Args >
-inline const char * getarg( const char *defaults, const char *arg0, Args... argv ) {
-    const char *t = getarg( defaults, arg0 );
-    return t == defaults ? getarg( defaults, argv... ) : t;
+template< typename... Args > inline const char * GET_ARG( const char *defaults, const char *arg0, Args... argv ) {
+    const char *t = GET_ARG( defaults, arg0 );
+    return t == defaults ? GET_ARG( defaults, argv... ) : t;
 }
 
 // }
@@ -254,7 +251,7 @@ inline const char * getarg( const char *defaults, const char *arg0, Args... argv
 #include <iostream>
 #include <stdlib.h>
 
-int main( int argc, const char **argv ) {
+void _main( int argc, const char **argv ) {
 
     auto show_help = [&]() {
         std::cout << argv[0] << " [-h|--help|-?] [-f=path|--file=path] [-v|--version] [-d=number|--depth=number|--max-depth=number]" << std::endl;
@@ -263,10 +260,10 @@ int main( int argc, const char **argv ) {
 
     // Simple functional api. No initialization required.
 
-    bool help = getarg( false, "-h", "--help", "-?" );
-    int version = getarg( 0, "-v", "--version", "--show-version" );
-    int depth = getarg( 0, "-d", "--depth", "--max-depth");
-    std::string file = getarg( "", "-f", "--file" );
+    bool help = GET_ARG( false, "-h", "--help", "-?" );
+    int version = GET_ARG( 0, "-v", "--version", "--show-version" );
+    int depth = GET_ARG( 0, "-d", "--depth", "--max-depth");
+    std::string file = GET_ARG( "", "-f", "--file" );
 
     if( help || argc <= 1 ) {
         show_help();

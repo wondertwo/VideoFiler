@@ -3,6 +3,7 @@
 #include <zconf.h>
 #include <vector>
 #include <string>
+#include "cmd_parameters.h"
 #include "mtools.h"
 
 using namespace std;
@@ -159,7 +160,7 @@ string join_str_vector(const vector<string> &str_vector, const string &delimiter
 }
 
 //======================================================================================================
-int _main(int argc, char *argv[]) {
+int main( /* int argc, char *argv[] */ int argc, const char **argv ) {
     LOGGER::GetColor()->XE("test%s", "MN").XW("test%s", "MN").XI("test%s", "MN").XD("test%s", "MN");
     string videopath = GetDirectory() + "resources/videofiler.mp4";
     string info = "hello world, video path:" + videopath;
@@ -168,7 +169,14 @@ int _main(int argc, char *argv[]) {
 
     // extractVideoFormatInfo(videopath);
     // testMyStrTransfer();
-    testPresidentElections();
     SintonTestImpl::GetInstance().print();
+    testPresidentElections();
+
+    // - No initialization required: (argc, argv) pair automatically retrieved.
+    // - First argument is default option value, then all option indentifiers follow.
+    /*std::cout << GET_ARG( 0, "-v", "--version", "--show-version" )
+            << ',' << GET_ARG( 1, "-d", "--depth", "--max-depth")
+            << ',' << GET_ARG( false, "-h", "--help", "-?" )
+            << ',' << GET_ARG( "", "-f", "--file") << std::endl;*/
     return 0; // end main
 }
