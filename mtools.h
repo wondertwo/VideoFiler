@@ -20,6 +20,7 @@ const std::string COLOR_RED = "\033[31m";
 const std::string COLOR_YEL = "\033[33m";
 const std::string COLOR_BLU = "\033[34m";
 const std::string COLOR_WHI = "\033[37m";
+const std::string COLOR_RESET = "\033[0m";
 
 
 std::vector<std::string> SplitStr(const std::string &input, const std::string &delimiter);
@@ -34,6 +35,31 @@ int _vscprintf(const char * format, va_list list);
 
 /* 文件日志 */
 const std::string LOGGER_FILE_PATH = GetDirectory() + "resources/output.txt";
+
+
+template<typename T> class SintonBase { /*单例模板基类*/
+public:
+    static T &GetInstance() {
+        static T t;
+        return t;
+    }
+
+protected:
+    ~SintonBase() {};
+    SintonBase() {};
+
+private:
+    SintonBase &operator=(const SintonBase &);
+    SintonBase(const SintonBase &);
+};
+
+class SintonTestImpl : public SintonBase<SintonTestImpl> { /*单例实现类示例*/
+public:
+    void print() {
+        std::cout << "Hello, this is SintonTestImpl." << std::endl;
+    }
+};
+
 
 /*template<typename ostreamT = std::ostream>*/ class LOGGER {
 public:
@@ -86,17 +112,17 @@ protected:
 
     template<class T> void output(const T &x) { GetOutStream() << x; }
 
-    template<class T, class... Ts> void output(const T &x, Ts... args) {
-        output(x);
-        output(args...);
+    template<class T, class... X> void output(const T &t, X... xs) {
+        output(t);
+        output(xs...);
         GetOutStream().flush();
     }
 
-    template<class... Ts> LOGGER &operator()(LOGLevel level, Ts... args) {
+    template<class... T> LOGGER &operator()(LOGLevel level, T... ts) {
         if (level < (int) _minLevel) {
             return *this;
         }
-        std::string level_prefix, color_prefix, color_endfix = COLOR_BLA, current = CurrentDateTime();
+        std::string level_prefix, color_prefix, color_endfix = COLOR_RESET, current = CurrentDateTime();
         switch (level) {
             case WARNING:
                 level_prefix = "[WARNING]";
@@ -119,7 +145,7 @@ protected:
                 level_prefix = "";
         }
         std::string prefix = (_color ? color_prefix : "") + current + " " + level_prefix + " ";
-        output(prefix, args..., "\n", (_color ? color_endfix : ""));
+        output(prefix, ts..., "\n", (_color ? color_endfix : ""));
         return *this; // Dont forget to return LOGGER&
     }
 

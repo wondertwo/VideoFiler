@@ -169,5 +169,6 @@ int main() {
     // extractVideoFormatInfo(videopath);
     // testMyStrTransfer();
     testPresidentElections();
+    SintonTestImpl::GetInstance().print();
     return 0; // end main
 }
