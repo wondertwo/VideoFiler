@@ -61,7 +61,7 @@ public:
 };
 
 
-/*template<typename ostreamT = std::ostream>*/ class LOGGER {
+/*template<typename ostreamT = std::ostream>*/ class LOGGER { /* ref: https://github.com/gabime/spdlog */
 public:
     enum LOGLevel {
         DEBUG, INFO, WARNING, ERROR
