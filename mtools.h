@@ -49,8 +49,8 @@ protected:
     SintonBase() {};
 
 private:
-    SintonBase &operator=(const SintonBase &);
-    SintonBase(const SintonBase &);
+    SintonBase &operator=(const SintonBase &) = delete;
+    SintonBase(const SintonBase &) = delete;
 };
 
 class SintonTestImpl : public SintonBase<SintonTestImpl> { /*单例实现类示例*/

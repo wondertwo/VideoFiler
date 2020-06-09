@@ -159,7 +159,7 @@ string join_str_vector(const vector<string> &str_vector, const string &delimiter
 }
 
 //======================================================================================================
-int main() {
+int _main(int argc, char *argv[]) {
     LOGGER::GetColor()->XE("test%s", "MN").XW("test%s", "MN").XI("test%s", "MN").XD("test%s", "MN");
     string videopath = GetDirectory() + "resources/videofiler.mp4";
     string info = "hello world, video path:" + videopath;
