@@ -1,5 +1,5 @@
 //
-// Created by wondertwo(王尧) on 2020/6/7.
+// Created by papeplus(王尧) on 2020/6/8. 日志工具
 //
 
 #ifndef LOGGER_HPP
@@ -15,12 +15,12 @@
 #include <vector>
 #include <mutex>
 
-const std::string COLOR_BLA = "\033[30m";
-const std::string COLOR_RED = "\033[31m";
-const std::string COLOR_YEL = "\033[33m";
-const std::string COLOR_BLU = "\033[34m";
-const std::string COLOR_WHI = "\033[37m";
-const std::string COLOR_RESET = "\033[0m";
+const std::string COLOR_BLA     = "\033[30m";
+const std::string COLOR_RED     = "\033[31m";
+const std::string COLOR_YEL     = "\033[33m";
+const std::string COLOR_BLU     = "\033[34m";
+const std::string COLOR_WHI     = "\033[37m";
+const std::string COLOR_RESET   = "\033[0m";
 
 
 std::vector<std::string> SplitStr(const std::string &input, const std::string &delimiter);
@@ -31,13 +31,18 @@ std::string GetDirectory(); // Get current workdir
 
 std::string CurrentDateTime(); // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
 
-int _vscprintf(const char * format, va_list list);
+int vscprintf(const char * format, va_list list);
 
-/* 文件日志 */
+/*
+ * 文件日志
+ */
 const std::string LOGGER_FILE_PATH = GetDirectory() + "resources/output.txt";
 
 
-template<typename T> class SintonBase { /*单例模板基类*/
+/*
+ * 单例模板
+ */
+template<typename T> class SintonBase {
 public:
     static T &GetInstance() {
         static T t;
@@ -61,16 +66,20 @@ public:
 };
 
 
-/*template<typename ostreamT = std::ostream>*/ class LOGGER { /* ref: https://github.com/gabime/spdlog */
+/*
+ * template<typename ostreamT = std::ostream>
+ * ref: https://github.com/gabime/spdlog
+ */
+class LOG {
 public:
     enum LOGLevel {
         DEBUG, INFO, WARNING, ERROR
     };
 
 protected:
-    static LOGGER *sInstance;
-    static LOGGER *sInstanceFile;
-    static LOGGER *sInstanceColor;
+    static LOG *sInstance;
+    static LOG *sInstanceFiler;
+    static LOG *sInstanceColor;
 
     LOGLevel _minLevel;
     bool _color;
@@ -78,22 +87,22 @@ protected:
     std::ostream &_ostream;
     std::ofstream _ofouts;
 
-    LOGGER(LOGLevel minLevel = INFO, bool color = false, std::ostream &os = std::cout);
+    explicit LOG(LOGLevel minLevel = INFO, bool color = false, std::ostream &os = std::cout);
     static char *formatInput(const char *format, va_list parameters);
 
-    ~LOGGER() {
-        std::cout << "LOGGER de-constructor called..." << std::endl;
+    ~LOG() {
+        std::cout << "LOG de-constructor called..." << std::endl;
         if (sInstanceColor) {
             delete sInstanceColor;
-            sInstanceColor = NULL;
+            sInstanceColor = nullptr;
         }
-        if (sInstanceFile) {
-            delete sInstanceFile;
-            sInstanceFile = NULL;
+        if (sInstanceFiler) {
+            delete sInstanceFiler;
+            sInstanceFiler = nullptr;
         }
         if (sInstance) {
             delete sInstance;
-            sInstance = NULL;
+            sInstance = nullptr;
         }
         if (_ofouts.is_open()) {
             _ofouts.close();
@@ -118,26 +127,26 @@ protected:
         GetOutStream().flush();
     }
 
-    template<class... T> LOGGER &operator()(LOGLevel level, T... ts) {
+    template<class... T> LOG &operator()(LOGLevel level, T... ts) {
         if (level < (int) _minLevel) {
             return *this;
         }
         std::string level_prefix, color_prefix, color_endfix = COLOR_RESET, current = CurrentDateTime();
         switch (level) {
             case WARNING:
-                level_prefix = "[WARNING]";
+                level_prefix = "[W]";
                 color_prefix = COLOR_YEL;
                 break;
             case ERROR:
-                level_prefix = "[ERROR]";
+                level_prefix = "[E]";
                 color_prefix = COLOR_RED;
                 break;
             case DEBUG:
-                level_prefix = "[DEBUG]";
+                level_prefix = "[D]";
                 color_prefix = COLOR_BLU;
                 break;
             case INFO:
-                level_prefix = "[INFO]";
+                level_prefix = "[I]";
                 color_prefix = COLOR_WHI;
                 break;
             default:
@@ -146,7 +155,7 @@ protected:
         }
         std::string prefix = (_color ? color_prefix : "") + current + " " + level_prefix + " ";
         output(prefix, ts..., "\n", (_color ? color_endfix : ""));
-        return *this; // Dont forget to return LOGGER&
+        return *this; // Dont forget to return LOG&
     }
 
 public:
@@ -154,34 +163,34 @@ public:
      * 使用template<class T>实现类函数时。若是将函数声明写在.h文件，实现写在.cpp则出现"Undefined symbols for architecture x86_64"
      * 应将申明和实现都放在.h文件
      */
-    template<class... Ts> LOGGER &D(Ts... args) {
+    template<class... Ts> LOG &D(Ts... args) {
         return operator()(DEBUG, args...);
     }
 
-    template<class... Ts> LOGGER &I(Ts... args) {
+    template<class... Ts> LOG &I(Ts... args) {
         return operator()(INFO, args...);
     }
 
-    template<class... Ts> LOGGER &W(Ts... args) {
+    template<class... Ts> LOG &W(Ts... args) {
         return operator()(WARNING, args...);
     }
 
-    template<class... Ts> LOGGER &E(Ts... args) {
+    template<class... Ts> LOG &E(Ts... args) {
         return operator()(ERROR, args...);
     }
 
-    // LOGGER::Get()->SetLevel(LOGGER::LOGLevel::ERROR);
-    // cout << (int) LOGGER::Get()->GetLevel() << endl;
+    // LOG::Get()->SetLevel(LOG::LOGLevel::ERROR);
+    // cout << (int) LOG::Get()->GetLevel() << endl;
     LOGLevel GetLevel() const;
-    LOGGER &SetLevel(LOGLevel level);
-    static LOGGER *Get();
-    static LOGGER *GetFile();
-    static LOGGER *GetColor();
+    LOG &SetLevel(LOGLevel level);
+    static LOG *GET();
+    static LOG *FILER();
+    static LOG *COLOR();
 
-    LOGGER &XE(const char *format, ...);
-    LOGGER &XW(const char *format, ...);
-    LOGGER &XI(const char *format, ...);
-    LOGGER &XD(const char *format, ...);
+    LOG &XE(const char *format, ...);
+    LOG &XW(const char *format, ...);
+    LOG &XI(const char *format, ...);
+    LOG &XD(const char *format, ...);
 
 };
 

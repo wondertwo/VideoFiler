@@ -3,8 +3,7 @@
 #include <zconf.h>
 #include <vector>
 #include <string>
-#include "cmd_parameters.h"
-#include "mtools.h"
+#include "moretools.h"
 
 using namespace std;
 
@@ -31,7 +30,7 @@ struct President { /* explains the different between vector#emplace_back and vec
     President &operator=(const President &other);
 };
 
-void testPresidentElections() { /* test the different between vector#emplace_back and vector#push_back */
+void AmericaElection_TrumpWithBiden() { /* test the different between vector#emplace_back and vector#push_back */
     std::vector<President> elections;
     std::cout << "emplace_back:" << endl;
     elections.emplace_back("Nelson Mandela", "South Africa", 1994); //没有类的创建
@@ -63,7 +62,7 @@ private:
     }
 
 public:
-    MyStrTransfer &operator=(MyStrTransfer &&str) {  /* move operator */
+    MyStrTransfer &operator = (MyStrTransfer &&str)  noexcept {  /* move operator */
         std::cout << "Move Assignment is called! source: " << str._data << std::endl;
         if (this != &str) {
             _len = str._len;
@@ -159,24 +158,26 @@ string join_str_vector(const vector<string> &str_vector, const string &delimiter
     return result_str;
 }
 
-//========================================================================================================
-int main( /* int argc, char *argv[] */ int argc, const char **argv ) { /* https://github.com/fmtlib/fmt */
-    LOGGER::GetColor()->XE("test%s", "MN").XW("test%s", "MN").XI("test%s", "MN").XD("test%s", "MN");
-    string videopath = GetDirectory() + "resources/videofiler.mp4";
-    string info = "hello world, video path:" + videopath;
-    LOGGER::GetColor()->E(info).I(info).D(info).W(info);
-    LOGGER::GetFile()->E(info).I(info).D(info).W(info);
+/*
+ * ---------------------------------------------------------------------------------
+ * https://github.com/fmtlib/fmt
+ */
+int main(int argc, const char **argv) {
+    string path = GetDirectory() + "resources/videofiler.mp4";
+    string info = "hello world, video path:%s";
+    // 一般用法，支持字符串格式化，推荐使用
+    LOG::GET()->E(path).D(path).W(path).I(path).XE(info.c_str(), path.c_str());
+    // 颜色日志，支持字符串格式化，推荐使用
+    LOG::COLOR()->XE(info.c_str(), path.c_str()).I(path).D(path).W(path);
+    // 文件日志，支持字符串格式化，关键日志
+    LOG::FILER()->XE(info.c_str(), path.c_str()).I(path).D(path).W(path);
 
     // extractVideoFormatInfo(videopath);
     // testMyStrTransfer();
     SintonTestImpl::GetInstance().print();
-    testPresidentElections();
+    AmericaElection_TrumpWithBiden();
 
+    // - First argument is default option value, then all option identifiers follow.
     // - No initialization required: (argc, argv) pair automatically retrieved.
-    // - First argument is default option value, then all option indentifiers follow.
-    /*std::cout << GET_ARG( 0, "-v", "--version", "--show-version" )
-            << ',' << GET_ARG( 1, "-d", "--depth", "--max-depth")
-            << ',' << GET_ARG( false, "-h", "--help", "-?" )
-            << ',' << GET_ARG( "", "-f", "--file") << std::endl;*/
     return 0; // end main
 }

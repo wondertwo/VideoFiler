@@ -1,50 +1,56 @@
 //
-// Created by wondertwo(王尧) on 2020/6/7.
+// Created by papeplus(王尧) on 2020/6/8. 日志工具
 //
 
-#include "mtools.h"
+#include "moretools.h"
 
-LOGGER *LOGGER::sInstanceColor = NULL;
-LOGGER *LOGGER::sInstanceFile = NULL;
-LOGGER *LOGGER::sInstance = NULL;
+LOG *LOG::sInstanceColor = nullptr;
+LOG *LOG::sInstanceFiler = nullptr;
+LOG *LOG::sInstance = nullptr;
 
-LOGGER::LOGGER(LOGLevel minLevel, bool color, std::ostream &os) :
+LOG::LOG(LOGLevel minLevel, bool color, std::ostream &os) :
         _minLevel(minLevel), _color(color), _filer(false), _ostream(os),
         _ofouts(LOGGER_FILE_PATH, std::ios::app) {
 }
 
-LOGGER *LOGGER::GetColor() {
-    if (!sInstanceColor) sInstanceColor = new LOGGER(DEBUG, true);
+/*
+ * 获取日志打印实例，将日志信息输出到控制台，并附着日志等级颜色，大多数场景下推荐使用此方式
+ */
+LOG *LOG::COLOR() {
+    if (!sInstanceColor) sInstanceColor = new LOG(DEBUG, true);
     return sInstanceColor;
 }
 
-LOGGER *LOGGER::GetFile() {
-    if (!sInstanceFile) {
-        sInstanceFile = new LOGGER(DEBUG, false);
-        sInstanceFile->_color = false;
-        sInstanceFile->_filer = true;
+/*
+ * 获取日志打印实例，将日志输出到日志文件中，一些比较关键的日志建议才使用文件输出，方便回溯
+ */
+LOG *LOG::FILER() {
+    if (!sInstanceFiler) {
+        sInstanceFiler = new LOG(DEBUG, false);
+        sInstanceFiler->_color = false;
+        sInstanceFiler->_filer = true;
     }
-    return sInstanceFile;
+    return sInstanceFiler;
 }
 
-LOGGER *LOGGER::Get() {
-    if (!sInstance) sInstance = new LOGGER(DEBUG, false);
+LOG *LOG::GET() {
+    if (!sInstance) sInstance = new LOG(DEBUG, false);
     return sInstance;
 }
 
-LOGGER::LOGLevel LOGGER::GetLevel() const {
+LOG::LOGLevel LOG::GetLevel() const {
     return this->_minLevel;
 }
 
-LOGGER &LOGGER::SetLevel(LOGLevel level) {
+LOG &LOG::SetLevel(LOGLevel level) {
     this->_minLevel = level;
     return *this;
 }
 
-char *LOGGER::formatInput(const char *format, va_list parameters) {
+char *LOG::formatInput(const char *format, va_list parameters) {
     //  Return the number of characters in the string referenced the list of arguments.
     // _vscprintf doesn't count terminating '\0' (that's why +1)
-    int nLen = _vscprintf(format, parameters) + 1;
+    int nLen = vscprintf(format, parameters) + 1;
     char *sInfo = new char[nLen];
     // vsprintf_s(sMessage, nLength, format, args);
     vsprintf(sInfo, format, parameters);
@@ -52,49 +58,49 @@ char *LOGGER::formatInput(const char *format, va_list parameters) {
     return sInfo;
 }
 
-LOGGER &LOGGER::XD(const char *format, ...) {
+LOG &LOG::XD(const char *format, ...) {
     va_list parameters;
     va_start(parameters, format);
     char *sInfo = formatInput(format, parameters);
     va_end(parameters);
-    LOGGER &instanc = operator()(DEBUG, sInfo);
+    LOG &instanc = operator()(DEBUG, sInfo);
     delete[] sInfo;
     return instanc;
 }
 
-LOGGER &LOGGER::XI(const char *format, ...) {
+LOG &LOG::XI(const char *format, ...) {
     va_list parameters;
     va_start(parameters, format);
     char *sInfo = formatInput(format, parameters);
     va_end(parameters);
-    LOGGER &instanc = operator()(INFO, sInfo);
+    LOG &instanc = operator()(INFO, sInfo);
     delete[] sInfo;
     return instanc;
 }
 
-LOGGER &LOGGER::XW(const char *format, ...) {
+LOG &LOG::XW(const char *format, ...) {
     va_list parameters;
     va_start(parameters, format);
     char *sInfo = formatInput(format, parameters);
     va_end(parameters);
-    LOGGER &instanc = operator()(WARNING, sInfo);
+    LOG &instanc = operator()(WARNING, sInfo);
     delete[] sInfo;
     return instanc;
 }
 
-LOGGER &LOGGER::XE(const char *format, ...) {
+LOG &LOG::XE(const char *format, ...) {
     va_list parameters;
     va_start(parameters, format);
     char *sInfo = formatInput(format, parameters);
     va_end(parameters);
-    LOGGER &instanc = operator()(ERROR, sInfo);
+    LOG &instanc = operator()(ERROR, sInfo);
     delete[] sInfo;
     return instanc;
 }
 
 
 std::string CurrentDateTime() { // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
-    time_t now = time(NULL);
+    time_t now = time(nullptr);
     tm tstruct{};
     char buf[80];
     localtime_r(&now, &tstruct);
@@ -102,11 +108,11 @@ std::string CurrentDateTime() { // Get current date/time, format is YYYY-MM-DD.H
     return buf;
 }
 
-int _vscprintf(const char * format, va_list list) {
+int vscprintf(const char * format, va_list list) {
     int retVal;
     va_list vaList;
     va_copy(vaList, list);
-    retVal = vsnprintf(NULL, 0, format, vaList);
+    retVal = vsnprintf(nullptr, 0, format, vaList);
     va_end(vaList);
     return retVal;
 }

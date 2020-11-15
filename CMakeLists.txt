@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(PROJECT_SOURCE_FILES
         main.cc
-        mtools.cc
-        mtools.h
+        moretools.cc
+        moretools.h
         cronet_builder.cc
         cronet_builder.h
         wake_reference.cc
